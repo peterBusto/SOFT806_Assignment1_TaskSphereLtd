@@ -36,7 +36,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         
-        UserProfile.objects.create(user=user, **profile_data)
+        # Use get_or_create to avoid duplicate profile creation
+        profile, created = UserProfile.objects.get_or_create(user=user, defaults=profile_data)
+        if not created:
+            # Update existing profile with new data
+            for key, value in profile_data.items():
+                setattr(profile, key, value)
+            profile.save()
+        
         return user
 
 
