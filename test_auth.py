@@ -3,8 +3,16 @@
 Test script for authentication endpoints.
 """
 
+import os
+import sys
+import django
 import requests
 import json
+
+# Setup Django environment
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SOFT806_Assignment1_TaskSphereLtd.settings')
+django.setup()
 
 BASE_URL = "http://localhost:8000/api"
 
