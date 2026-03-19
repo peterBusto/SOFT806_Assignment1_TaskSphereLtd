@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import ProjectViewSet, TaskViewSet, UserViewSet
 from .auth_views import RegisterView, LoginView, LogoutView, UserProfileView, current_user
 from .session_views import session_info, extend_session, logout_all_sessions, active_sessions
-from .test_views import test_public, test_protected, test_login_simple
+from .test_views import test_public, test_protected, test_login_simple, check_session
+from .token_views import verify_token
 
 router = DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -26,4 +27,7 @@ urlpatterns = [
     path('test/public/', test_public, name='test-public'),
     path('test/protected/', test_protected, name='test-protected'),
     path('test/login-simple/', test_login_simple, name='test-login-simple'),
+    path('test/check-session/', check_session, name='test-check-session'),
+    # Token verification endpoint
+    path('auth/token/verify/', verify_token, name='token-verify'),
 ]

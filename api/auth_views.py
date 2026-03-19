@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .serializers import UserRegistrationSerializer, UserSerializer, UserProfileSerializer
 from .models import UserProfile
+from .token_authentication import generate_token_for_user
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -19,9 +20,16 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
+            
+            # Generate token for the new user
+            token = generate_token_for_user(user)
+            
             return Response({
                 'message': 'User registered successfully',
-                'user': UserSerializer(user).data
+                'token': token,
+                'token_type': 'Token',
+                'user': UserSerializer(user).data,
+                'expires_in': 86400
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,9 +50,16 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            
+            # Generate token for the authenticated user
+            token = generate_token_for_user(user)
+            
             return Response({
                 'message': 'Login successful',
-                'user': UserSerializer(user).data
+                'token': token,
+                'token_type': 'Token',
+                'user': UserSerializer(user).data,
+                'expires_in': 86400
             }, status=status.HTTP_200_OK)
         else:
             return Response({
