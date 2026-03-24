@@ -98,3 +98,14 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['name', 'description', 'is_completed']
+    
+    def create(self, validated_data):
+        # Automatically set the owner to the current user
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        # Get the user from context (set by view)
+        user = self.context['request'].user
+        validated_data['owner'] = user
+        
+        return Project.objects.create(**validated_data)
